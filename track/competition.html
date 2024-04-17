@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--    <meta charset="utf-8">-->
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" charset="utf-8"/>
+    <!--    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">-->
+    <title>飞船转移轨道探究实验</title>
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css" />
+
+    <script type="text/javascript" src="js/jquery1.8.3.min.js"></script>
+    <script type="text/javascript" src="js/parabola.js"></script>
+    <script type="text/javascript" src="js/panel.js"></script>
+    <script type="text/javascript" src="layui/layui.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.sound.min.js"></script>
+    <!--        <script src="js/sketch.js"></script>-->
+</head>
+<style>
+    #content{
+        position: relative;
+        top:5%;
+    }
+    *{
+        margin:0;
+        padding:0;
+    }
+    .ab{
+        width:2px;
+        height:2px;
+        background:#e2e2e2;
+        position: absolute;
+    }
+    .ab1{
+        width:2px;
+        height:2px;
+        background:#e2e2e2;
+        position: absolute;
+    }
+    .ab2{
+        width:2px;
+        height:2px;
+        background: #e2e2e2;
+        position: absolute;
+    }
+    .ab3{
+        width:1px;
+        height:1px;
+        background: #e2e2e2;
+        position: absolute;
+        opacity: 0;
+    }
+    #move{
+        position: absolute;
+        width:70px;
+        height:70px;
+
+    }
+    #move1{
+        position: absolute;
+        width:50px;
+        height:50px;
+    }
+    #move2{
+        position: absolute;
+        width:20px;
+        height:20px;
+    }
+    #move3{
+        position: absolute;
+        width:90px;
+        height:90px;
+        left: 550px;
+        top:460px;
+
+
+    }
+</style>
+<body background="imgs/bg2.jpg">
+<h2 style="font-size:28px; width:680px;position: absolute;top:1%;left:39%;font-family:'微软雅黑';color: #e2e2e2">您有六次机会，成功让飞船降落到火星就挑战成功哦！</h2>
+<h3 id="failure" style="font-size:25px;font-family:'微软雅黑';position: absolute;top:35%;left:55%;display: none;color: #e2e2e2" >挑战失败!请点击"重新开始"后调节变量，重新开始游戏。</h3>
+<h3 id="failure2" style="font-size:25px;font-family:'微软雅黑';position: absolute;top:35%;left:60%;display: none;color: #e2e2e2" >挑战失败!请点击《提交结论》，填写实验结论</h3>
+<img id="jiayou" src="imgs/jiayou.png"style="position: absolute;top:36%;left:65%;display: none" width="200px" height="200px">
+<h3 id="success" style="font-size:25px;font-family:'微软雅黑';position: absolute;top:35%;left:60%; display: none;color: #e2e2e2" >挑战成功!请点击《提交结论》，填写实验结论</h3>
+<img id="sahua" src="imgs/sahua.png"style="position: absolute;top:36%;left:65%;display: none" width="200px" height="200px">
+<img id="img1"src="imgs/xing.png" style="position: absolute;left: 45%;top:8%">
+<img id="img2"src="imgs/xing.png" style="position: absolute;left: 50%;top:8%">
+<img id="img3"src="imgs/xing.png" style="position: absolute;left: 55%;top:8%">
+<img id="img4"src="imgs/xing.png" style="position: absolute;left: 60%;top:8%">
+<img id="img5"src="imgs/xing.png" style="position: absolute;left: 65%;top:8%">
+<img id="img6"src="imgs/xing.png" style="position: absolute;left: 70%;top:8%">
+<img id="move"  src="imgs/earth.png">
+<img id="move1"  src="imgs/mars.png">
+<img id="move2"  src="imgs/feichuan.png" >
+<img id="move3"  src="imgs/sun.png" >
+<!--<p style="position: absolute;left:10px;top:23%;color: #e2e2e2">【注】不同星体的对应的left和top是指，他们在本页面中距离左边和上面界限的距离。</p>-->
+<!--<p style="position: absolute;left:10px;top:40%;color: #e2e2e2">地球初始位置坐标为：left：575px；top：675px</p>-->
+<!--<p style="position: absolute;left:10px;top:45%;color: #e2e2e2">飞船初始位置坐标为：left：590px；top：690px</p>-->
+<!--<p style="position: absolute;left:10px;top:50%;color: #e2e2e2">火星初始位置坐标为：left：425px；top：760px</p>-->
+<!--<p style="position: absolute;left:10px;top:55%;color: #e2e2e2">远日点的位置坐标为：</p>-->
+<p id="spaceship" style="position: absolute;left:150px;top:55%;color: #e2e2e2"></p>
+<!-- 左上角按钮 -->
+<div style="font-family:'微软雅黑';float:left;position:absolute;margin:10px 20px ">
+    <!--    <a id="reset" href="#">-->
+    <!--        <i class="fa fa-eraser  fa-lg"></i> 刻度尺</a>-->
+    <a id="setOptions"  href="#" style="color: #e2e2e2">
+        <i class="fa fa-rocket fa-lg"></i> 开始运动</a>
+    <a id="stop"  href="#" style="display: none;color: #e2e2e2">
+        <i class="fa fa-pause fa-lg"></i> 重新开始</a>
+    <a id="star" style="display: none;color: #e2e2e2"  >
+        <i class="fa fa-star fa-lg" ></i> 提交实验结论</a>
+</div>
+<!-- 操作说明 -->
+<div id="content" style="color: #e2e2e2">
+    <h3>实验说明《竞赛模式》：</h3>
+    <p>1、游戏说明：从地球上发射的飞船需要成功着落火星，飞船的轨迹是椭圆形，近日点在地球，远日点在火星。</p>
+    <p>2、在竞赛模式中，您有六次机会通过调节右侧变量，当飞船按照要求成功着落火星，即为挑战成功。</p>
+    <p>3、点击开始运动前，请先调好变量哦～</p>
+    <p>4、此页面结束后，请您进入《提交结论》写下您在本次实验中得出的实验结论。</p>
+    <p>5、不同星体的对应的left和top是指，他们在本页面中距离左边和上面界限的距离。</p>
+    <p>注：如果遇到页面中按钮点击不了的情况，请更换浏览器重新打开页面。（推荐chrome浏览器）</p>
+
+</div>
+
+<!-- 右上角的滑块 -->
+<div id="slider-container">
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                <legend style="color: #0C0C0C;font-size:15px;padding: 3px 20px" class="layui-bg-green">地球和火星夹角 /°</legend>
+            </fieldset>
+            <div class="demo-slider" id="slideTest8_1"></div>
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                <legend style="color: #0C0C0C;font-size:15px;padding: 3px 10px" class="layui-bg-green">飞船发射速度 /km/s</legend>
+            </fieldset>
+            <div class="demo-slider" id="slideTest8_2"></div>
+
+<!--            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">-->
+<!--                <legend style="color: #0C0C0C;font-size:15px;padding: 3px 13px" class="layui-bg-green">圆盘半径 /cm</legend>-->
+<!--            </fieldset>-->
+<!--            <div class="demo-slider" id="slideTest8_3"></div>-->
+
+<!--            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">-->
+<!--                <legend style="color: #0C0C0C;font-size:15px;padding: 3px 13px" class="layui-bg-green">圆盘质量 /kg</legend>-->
+<!--            </fieldset>-->
+<!--            <div class="demo-slider" id="slideTest8_4"></div>-->
+
+        </div>
+    </form>
+</div>
+
+<!--<button type="button" onclick="Reset()"  style="position: absolute;left:570px;top:220px">重置</button>-->
+<script type="text/javascript">
+    var jsonData = JSON.parse(window.name); //将window.name转化为json对象
+    var user_id=jsonData.userid;
+    var user_name=jsonData.username;
+
+    var ss=0
+    var i=0;
+    var angle=30;
+    var vv=35;
+    var z1=180+angle;
+    var kaishi=false;
+    var spacetop;
+    var go2=document.querySelector("#move2")
+    var go=document.querySelector("#move");
+    var go1=document.querySelector("#move1")
+
+    var tryArray=new Array();   // 存取每次运动的数据
+    var shuzu1=new Array();
+    var shuzu2=new Array();
+    var shuzu3=new Array();
+    var shuzu4=new Array();
+
+
+    layui.use('slider', function(){
+        var $ = layui.$
+            ,slider = layui.slider;
+
+        // 角度差
+        slider.render({
+            elem: '#slideTest8_1'
+            ,input: true
+            ,min:10
+            ,max:180
+            ,value:30
+            ,change: function(value){
+                shuzu1.push(value);
+            }
+        });
+        //发射速度
+        slider.render({
+            elem: '#slideTest8_2'
+            ,input: true //输入框
+            ,min:30
+            ,max:37
+            ,value:35
+            ,change: function(value){
+                shuzu2.push(value);
+            }
+        });
+        // //圆盘半径
+        // slider.render({
+        //     elem: '#slideTest8_3'
+        //     ,input: true //输入框
+        //     ,min:10
+        //     ,max:60
+        //     ,value:20
+        //     ,change: function(value){
+        //         shuzu3.push(value);
+        //     }
+        // });
+        // // 圆盘质量
+        // slider.render({
+        //     elem: '#slideTest8_4'
+        //     ,input: true //输入框
+        //     ,min:10
+        //     ,max:50
+        //     ,value:10
+        //     ,change: function(value){
+        //         shuzu4.push(value);
+        //     }
+        // });
+    });
+    // 滑块拉完后的变化
+    $(function(){
+        $(document).on('mouseup',(function(){
+            $(document).off('mousemove')
+            if(shuzu1.length==0){
+                angle=30;
+            }
+            else{
+                angle=shuzu1[shuzu1.length-1];
+                var rad=(Math.PI/180)*(180+angle);
+                var leftzb=300*Math.sin(rad)+600-25;
+                var topzb=500-(300*Math.cos(rad))-25;
+                // var go1=document.querySelector("#move1")
+                z1=180+angle;
+                go1.style.cssText="left:"+leftzb+"px;top:"+topzb+"px;";
+            }
+            if(shuzu2.length==0){
+                vv=35;
+            }
+            else{
+                vv=shuzu2[shuzu2.length-1];
+            }
+
+        }));
+    });
+
+    var fashe=false;
+    var q=1;//地球的圈数
+    var q1=1;//火星的圈数
+    var q2=1;//飞船的圈数
+    var p=1;//检测飞船是否成功着落
+    var x=600,y=500,a=200,b=200,du=360,z=180,arr=[],timer;
+    var xx=600,yy=500,a1=300,b1=300,du1=360,arr1=[],timer1;
+    var z11=180;
+
+    $("#stop").click(function (event) {
+        $.ajax({
+            url:'http://121.4.82.48:8086/ordinary',
+            type:'GET',
+            data:{
+                'xx':shuzu1[shuzu1.length-1],
+                'v':shuzu2[shuzu2.length-1],
+                'h':spacetop,
+                'user_id':user_id,
+            },
+            success() {
+                console.log(user_id+"成功")
+            },
+            error(){
+                console.log('失败')
+            }
+        })
+
+        document.getElementById("slider-container").style.display="inline"
+        document.getElementById("setOptions").style.display="inline";
+        document.getElementById("stop").style.display="none";
+        document.getElementById("failure").style.display="none";
+
+        //火星回到初始位置
+        var rad1=(Math.PI/180)*(180+30);
+        var leftzb1=300*Math.sin(rad1)+600-25;
+        var topzb1=500-(300*Math.cos(rad1))-25;
+        go1.style.cssText="left:"+leftzb1+"px;top:"+topzb1+"px;";
+        //地球回到初始位置
+        go.style.cssText="left:"+565+"px;top:"+665+"px;";
+        z=180;
+        z1=180+angle;
+        z11=180;
+        q=1;//地球的圈数
+        q1=1;//火星的圈数
+        q2=1;//飞船的圈数
+        p=1;//检测飞船是否成功着落
+        // location.reload();
+        // i++;
+        // xing();
+
+         var track = document.getElementsByClassName('ab2')
+        for ( let i in track){
+            track[i].style.display="none"
+            
+        }
+
+
+    });
+    (function (){
+        // var xx=600,yy=500,a1=300,b1=300,du1=360,z1=180+angle,arr1=[],timer1;
+
+        // var xxx=600,yyy=700-af,a11=bf,b11=af,du11=360,z11=180+angle,arr11=[],timer11;
+        var rad=(Math.PI/180)*(180+angle);
+        var leftzb=300*Math.sin(rad)+600-25;
+        var topzb=500-(300*Math.cos(rad))-25;
+
+        //地球初始位置
+
+        go.style.cssText="left:"+565+"px;top:"+665+"px;";
+        //火星开始位置，随angle角度的变化而变化
+        var go1=document.querySelector("#move1")
+        go1.style.cssText="left:"+leftzb+"px;top:"+topzb+"px;";
+        //飞船初始位置
+         go2.style.cssText="left:"+590+"px;top:"+690+"px;";
+
+        for (var i = 0; i < du; i++) {
+            var divs=document.createElement("div"),
+                hudu=(Math.PI/180)*i,
+                x1=a*Math.sin(hudu)+x,
+                y1=y-(b*Math.cos(hudu));
+            arr[i]=[];
+            arr[i][0]=x1-35;
+            arr[i][1]=y1-35;
+            divs.className="ab";
+            divs.style.cssText="left:"+x1+"px;top:"+y1+"px;"
+            document.body.appendChild(divs);
+        };
+        for (var i1 = 0; i1< du1; i1++) {
+            var divs1=document.createElement("div1"),
+                hudu1=(Math.PI/180)*i1,
+                xx1=a1*Math.sin(hudu1)+xx,
+                yy1=yy-(b1*Math.cos(hudu1));
+            arr1[i1]=[];
+            arr1[i1][0]=xx1-25;
+            arr1[i1][1]=yy1-25;
+            divs1.className="ab1";
+            divs1.style.cssText="left:"+xx1+"px;top:"+yy1+"px;"
+            document.body.appendChild(divs1);
+        };
+
+        clearInterval(timer);
+
+        timer=setInterval(function(){
+                if(kaishi){
+                    //地球小于360度一直转
+                    if(z<du){
+                        go.style.cssText="left:"+arr[z][0]+"px;top:"+arr[z][1]+"px;";
+                        z++;
+                       //如果在第二圈，地球还大于180度，则停止
+                        if(q===2&&z>180){
+                            go.style.cssText="left:"+565+"px;top:"+665+"px;";
+                            // kaishi=false;
+                        }
+                    } else if(z>=du){
+                        //地球第一次大于360度，继续转，但是状态值q=2;表明在第二圈
+                        z=0;
+                        q++;
+                    }
+                }
+
+        },24)
+
+        clearInterval(timer1);
+        timer1=setInterval(function(){
+            if(kaishi){
+                //火星小于360度一直转
+                if(z1<du1){
+                    go1.style.cssText="left:"+arr1[z1][0]+"px;top:"+arr1[z1][1]+"px;";
+                    z1++;
+                    //如果在第二圈，火星还大于180度，则停止
+                    if(q1===2&&z1>180){
+                         go1.style.cssText="left:"+575+"px;top:"+775+"px;";
+                        // kaishi=false;
+                    }
+                } else if(z1>=du1){
+                    //地球第一次大于360度，继续转，但是状态值q=2;表明在第二圈
+                    z1=0;
+                    q1++;
+                }
+            }
+        },30)
+    })()
+
+
+       //飞船代码
+     function tijiaofei(){
+           var ra=vv*vv*1.5*Math.pow(10,17)*200/(2.7*Math.pow(10,20)-vv*vv*1.5*Math.pow(10,17));
+           var rp=200;
+           var af=(ra+rp)/2;
+           var e=(ra-rp)/(ra+rp);
+           var bf=af*Math.sqrt(1-e*e);
+           var xxx=600,yyy=700-af,a11=bf,b11=af,du11=360,arr11=[],timer11;
+           var space=2*af;
+           spacetop=Math.round(700-space);
+         // document.getElementById("spaceship").innerHTML="left"+"："+575+"px"+"；"+"top"+"："+spacetop+"px";
+           var go2=document.querySelector("#move2")
+           for (var i2 = 0; i2 < du11; i2++) {
+               var divs2=document.createElement("div"),
+                   hudu2=(Math.PI/180)*i2,
+                   xxx1=a11*Math.sin(hudu2)+xxx,
+                   yyy1=yyy-(b11*Math.cos(hudu2));
+               arr11[i2]=[];
+               // arr11[i2][0]=xxx1-10;
+               // arr11[i2][1]=yyy1-10;
+               arr11[i2][0]=xxx1;
+               arr11[i2][1]=yyy1;
+               // divs2.className="ab2";
+               // divs2.style.cssText="left:"+xxx1+"px;top:"+yyy1+"px;"
+               //
+               // document.body.appendChild(divs2);
+           };
+
+           clearInterval(timer11);
+
+           timer11=setInterval(function(){
+               if (kaishi){
+                   //如果飞船没有到切点那，就继续飞行
+                    sleep(Math.abs(z11-180)/6)
+                   if(z11<du11&&p===1){
+                        go2.style.cssText="left:"+arr11[z11][0]+"px;top:"+arr11[z11][1]+"px;";
+                       var divs2=document.createElement("div");
+                           divs2.className="ab2";
+                       divs2.style.cssText="left:"+arr11[z11][0]+"px;top:"+arr11[z11][1]+"px;"
+                       document.body.appendChild(divs2);
+                       z11++;
+                       //如果在第二圈，飞船还大于180度，则停止
+                       if(q2===2&&z11>180){
+                           go2.style.cssText="left:"+590+"px;top:"+690+"px;";
+                           if(i<6){
+                               //显示继续挑战
+                               document.getElementById("failure").style.display="inline";
+                               //显示重新开始
+                               document.getElementById("stop").style.display="inline";
+                           }
+                           if(i===6){
+                               document.getElementById("failure2").style.display="inline";
+                               document.getElementById("jiayou").style.display="inline";
+                               document.getElementById("star").style.display="inline";
+                           }
+
+                            kaishi=false;
+                           clearInterval(timer11);
+                       }
+
+                   }else {
+                       if(vv===33&&angle>=53&&angle<=65){
+                           go2.style.display="none";
+                           //成功着落p=2；就不会进入上面那个循环
+                           p++;
+                       }
+                       //地球第一次大于360度，继续转，但是状态值q=2;表明在第二圈
+                       z11=0;
+                       q2++;
+                   }
+               }
+           },20)
+
+       }
+
+
+
+
+    function xing(){
+        i++;
+        switch (i) {
+            case 1:document.getElementById('img1').style.display="none";
+                break;
+            case 2:document.getElementById('img2').style.display="none";
+                break;
+            case 3:document.getElementById('img3').style.display="none";
+                break;
+            case 4:document.getElementById('img4').style.display="none";
+                break;
+            case 5:document.getElementById('img5').style.display="none";
+                break;
+            case 6:document.getElementById('img6').style.display="none";
+                break;
+            default:
+        }
+        //点击次数小于7次 ，可以进行发射
+        // if(i<=6) {
+        //
+        // }
+        // if(i>=7){
+        //     alert("hh")
+        //     document.getElementById("failure2").style.display="inline";
+        //
+        //     // document.getElementById("chart").style.display="inline"
+        //     document.getElementById('stop').style.pointerEvents="none"//按钮无法点击
+        // }
+
+    }
+
+    $("#setOptions").click(function (event) {
+
+        tijiaofei();
+        kaishi=true;
+        xing();
+        document.getElementById("slider-container").style.display="none"
+        //判断是否能着落火星
+        if(vv===33&&angle<=65&&angle>=53){
+            //5s后显示挑战成功
+            ss=1;
+            setTimeout(function (){document.getElementById("success").style.display="inline";document.getElementById("sahua").style.display="inline";},4500)
+            setTimeout(function (){document.getElementById("move2").style.display="none";},4000)
+            setTimeout(function (){document.getElementById("stop").style.display="none";},4000)
+            setTimeout(function (){document.getElementById("star").style.display="inline";},4000)
+        }
+        //出现重新开始
+
+        document.getElementById("setOptions").style.display="none";
+        fashe=true;
+        if(fashe){
+            if(isNaN(shuzu1[shuzu1.length-1])){
+                shuzu1[shuzu1.length-1]=30;
+            }
+            if(isNaN(shuzu2[shuzu2.length-1])){
+                shuzu2[shuzu2.length-1]=35;
+            }
+            // if(isNaN(shuzu3[shuzu3.length-1])){
+            //     shuzu3[shuzu3.length-1]=20;
+            // }
+            // if(isNaN(shuzu4[shuzu4.length-1])){
+            //     shuzu4[shuzu4.length-1]=10;
+            // }
+            tryArray.push(shuzu1[shuzu1.length-1],shuzu2[shuzu2.length-1]); // 3i高度，3i+1初速度，3i+2发射角度
+            fashe=false;
+        }
+        $.ajax({
+            url:'http://121.4.82.48:8086/game',
+            type:'GET',
+            data:{
+                'angle':shuzu1[shuzu1.length-1],
+                'vv':shuzu2[shuzu2.length-1],
+                "top":spacetop,
+                'user_id':user_id,
+
+            },
+            success() {
+                console.log(shuzu1[shuzu1.length-1],shuzu2[shuzu2.length-1],spacetop,
+                    user_id+"成功")
+            },
+            error(){
+                console.log('失败')
+            }
+        })
+    })
+
+
+    $("#star").click(function (event) {
+        //点击轨迹实验打包用户信息
+        var userid2 = user_id;//获取填写的id
+        var username2 = user_name;//获取填写的name
+        var jsonData2 = {"userid2":userid2,"username2":username2}; //转化为json格式
+        window.name = JSON.stringify(jsonData2); //window.name只接受字符串格式，所以需要把json转换一下
+        $.ajax({
+            url:'http://121.4.82.48:8086/login',
+            type:'POST',
+            data:{
+                "userId":user_id,
+                "userName":user_name,
+                'success':ss,
+                'chance':i
+            },
+            success() {
+                console.log(user_id+user_name+ss+i+"登录信息");
+            },
+            error(){
+                console.log('error')
+            }
+        })
+        window.location.replace("zuobiaoxi2.html");
+    });
+
+    function sleep(n){
+        var start = new Date().getTime();
+        while (true) {
+            if (new Date().getTime() - start > n) {
+                break;
+            }
+        }
+        console.log(n)
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,452 @@
+<html>
+
+<head>
+    <title>复摆运动周期探究实验</title>
+    <!--  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">-->
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" charset="utf-8"/>
+    <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css" />
+
+    <style>
+        #text{
+            position: relative;
+            left: 30%;
+        }
+        #setOptions{
+            position: relative;
+            left: 33%;
+        }
+        #testDiv {
+            background-color: buttonface;
+            background-repeat: repeat;
+            background-attachment: scroll;
+            color: #3969A5;
+            height:700px;
+            width: 1250px;
+            overflow: hidden;
+            z-index: 2;
+            border: 2px outset white;
+            margin: 0px;
+            padding: 2px;
+            background-position: 0% 50%
+        }
+        /*body {*/
+        /*  font-family: Verdana;*/
+        /*  font-size: 9pt;*/
+        /*}*/
+        #innerNice {
+            background-color: white;
+            background-repeat: repeat;
+            background-attachment: scroll;
+            color: #3969A5;
+            height: 90%;
+            width: 100%;
+            overflow: auto;
+            border: 2px inset white;
+            padding: 8px;
+            background-position: 0% 50%;
+            /*最上面的灰色*/
+            margin-top: 3%;
+        }
+        #drag {
+            position: absolute;
+            background: #0000CC;
+            top: 100px;
+            left: 200px;
+            padding: 0;
+            /*height: 100px;*/
+            /*width: 100px;*/
+        }
+        .button{
+            position: center;
+        }
+        #setOptions{
+            position: absolute;
+            left: 50%;
+            top:80%
+
+        }
+    </style>
+
+    <meta content="Microsoft FrontPage 4.0" name="GENERATOR">
+    <meta name="ProgId" content="FrontPage.Editor.Document">
+</head>
+
+<body>
+
+<!--    <a  style="color: black" href="normal1.html" >-->
+<!--        <i class="fa fa-star fa-lg"></i> 普通模式</a>-->
+<!--    <a  style="color: black" href="javascript:history.back();" >-->
+<!--        <i class="fa fa-star fa-lg"></i> 竞赛模式</a>-->
+
+<h2  style="text-align: center;font-size: 20px;font-weight: bolder;position: relative;top:10px">请根据自己的实验数据在对应的坐标系中画出散点图（选做）</h2>
+<button style="text-align: center;font-size: 15px;font-weight: bolder;position: relative;top:10px;left: 23%" class="button" onclick="c1()">清除θ-h（h为远日点的top坐标）坐标系</button>
+<!--    <button style="text-align: center;font-size: 15px;font-weight: bolder;position: relative;top:10px;left: 25%" class="button" onclick="c2()">清除m1-t坐标系</button>-->
+<!--    <button style="text-align: center;font-size: 15px;font-weight: bolder;position: relative;top:10px;left: 35%" class="button" onclick="c3()">清除l2-t坐标系</button>-->
+<button style="text-align: center;font-size: 15px;font-weight: bolder;position: relative;top:10px;left: 40%" class="button" onclick="c4()">清除v-h（h为远日点的top坐标）坐标系</button>
+<br/>
+<br/>
+<br/>
+<canvas class="canvas" id="myCanvas" width="1400" height="400"></canvas>
+<h3  style="text-align: center;font-size: 15px;font-weight: bolder;position: absolute;left: 17%">请写出"飞船发射速度是如何影响飞船转移轨道"（必填）</h3>
+<textarea id="text1" style="font-size: 20px ;position: absolute;left: 10%;top:70%" rows=3 cols=40; ></textarea>
+
+<h3  style="text-align: center;font-size: 15px;font-weight: bolder;position: absolute;left: 67%">请写出"地球和火星夹角是如何影响飞船转移轨道"（必填）</h3>
+<textarea id="text2" style="font-size: 20px ;position: absolute;left: 60%;top:70%" rows=3 cols=40; ></textarea>
+<button id="setOptions";style="text-align: center;font-size: 15px;font-weight: bolder;">提交结论</button>
+<h3 id="jieshu" style="display:none;position: absolute;left: 48%;top:85%;">恭喜你完成实验!!</h3>
+
+<a id="yuanli" style="display:none;position: absolute;left: 60%;top:85%;"href="https://zhuanlan.zhihu.com/p/20729366">本游戏涉及到的相关概念原理解释链接</a>
+<!--    <canvas class="canvas" id="twoCanvas" width="1250" height="500"></canvas>-->
+
+</body>
+
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+
+<script>
+
+
+
+    window.addEventListener('load', loadCanvas);
+    //侦听事件并处理相应的函数。load是页面加载完成，监听loadcanvas函数
+    //因为清除画布的功能要放在画坐标系的外面，而且需要用到cavParam，就在外面又写了一个
+    var cavParam = {};
+    cavParam.canvas = document.getElementById("myCanvas");
+    cavParam.context = cavParam.canvas.getContext('2d');
+    //画坐标系
+    function loadCanvas(){
+        // var canvas=document.getElementById("twoCanvas");
+        // var ctx=canvas.getContext("2d");
+        // drawLineArrow(cavParam, 0, 330, 360, 330, "#ac0d2f");
+        var cavParam = {};
+        cavParam.canvas = document.getElementById("myCanvas");
+        cavParam.context = cavParam.canvas.getContext('2d');
+        drawLineArrow(cavParam, 60, 330, 420, 330, "#000000",3);//1横
+        // drawLineArrow(cavParam, 390, 330, 620, 330, "#000000",3);//2横
+        // drawLineArrow(cavParam, 780, 330, 1010, 330, "#000000",3);//3横
+        drawLineArrow(cavParam, 800, 330, 1160, 330, "#000000",3);//4横
+        drawLineArrow(cavParam, 90, 390, 90, 30, "#000000",3);//1纵，（大坐标到小坐标）
+        // drawLineArrow(cavParam, 420, 390, 420, 30, "#000000",3);//2纵
+        // drawLineArrow(cavParam, 810, 390, 810, 30, "#000000",3);//3纵
+        drawLineArrow(cavParam, 840, 390, 840, 30, "#000000",3);//3纵
+        writeNumber1(10,113);writeNumber21(10);
+        // writeNumber12(10,440);writeNumber22(10);
+        // writeNumber13(10,830);writeNumber23(10);
+        writeNumber14(10,860);writeNumber24(10);
+        drawKdline1(120);drawKdline2(90);
+        // drawKdline1(450);drawKdline2(420);
+        // drawKdline1(840);drawKdline2(810);
+        drawKdline1(870);drawKdline2(840);
+        //writenumber(20,83,350);
+
+
+//横线与竖线的间隔距离
+        var dx = 30;
+        var dy = 30;
+//初始坐标点
+        var x=0;
+        var y=0;
+        var w=cavParam.canvas.width;
+        var h=cavParam.canvas.height;
+//单个步长所表示的长度
+        var xy=30;
+//画横线
+        while(y<h){
+            y=y+dy;//y=30
+            cavParam.context.beginPath();
+            cavParam.context.moveTo(x, y);//(0,30)   (0,60)
+            cavParam.context.lineTo(w,y);//(900,30)  (900,60)
+            cavParam.context.strokeStyle="grey";
+            cavParam.context.lineWidth=1;
+            cavParam.context.stroke();
+//横坐标的数字
+//       cavParam.context.font = "10pt Arial";
+//       cavParam.context.fillText(xy, x, y);//xy规定在画布上输出的文本，xy分别是坐标（0，30）（0，60）
+//       xy+=30;
+            cavParam.context.closePath()
+        }
+//画竖线
+        y=0;
+        xy=30;
+        while(x<w){
+            x=x+dx;
+            cavParam.context.beginPath();
+            cavParam.context.moveTo(x, y);
+            cavParam.context.lineTo(x,h);
+            cavParam.context.strokeStyle="grey";
+            cavParam.context.lineWidth=1;
+            cavParam.context.stroke();
+//纵坐标的数字
+//       cavParam.context.font = "10pt Arial";
+//       cavParam.context.fillText(xy,x,10);
+//       xy+=30;
+            cavParam.context.closePath();
+        }
+//写坐标
+        cavParam.context.font = "15pt Arial";
+        cavParam.context.fillText('θ/°',430,335);
+        // cavParam.context.fillText('m1/kg',630,335);
+        // cavParam.context.fillText('l2/cm',1030,335);
+        cavParam.context.fillText('v/(km/s)',1180,335);
+        cavParam.context.fillText('h(px)',80,23);
+        // cavParam.context.fillText('t(ms)',420,23);
+        // cavParam.context.fillText('t(ms)',810,23);
+        cavParam.context.fillText('h(px)',820,23);
+        //写横轴的刻度
+        function writeNumber1(a,x) {
+            var b=10;
+            while(b<210){
+                //x是横轴最小的横坐标
+                a=1*b;
+                cavParam.context.font = "10pt Arial";
+                cavParam.context.fillText(a,x,350);
+                b+=20;
+                x+=30;
+            }
+        }
+        //写横轴的刻度
+        function writeNumber12(a,x) {
+            var b=1;
+            while(b<6){
+                //x是横轴最小的横坐标
+                a=10*b;
+                cavParam.context.font = "10pt Arial";
+                cavParam.context.fillText(a,x,350);
+                b+=1;
+                x+=30;
+            }
+        }
+        //写横轴的刻度
+        function writeNumber13(a,x) {
+            var b=10;
+            while(b<180){
+                //x是横轴最小的横坐标
+                a=17*b;
+                cavParam.context.font = "10pt Arial";
+                cavParam.context.fillText(a,x,350);
+                b+=1;
+                x+=30;
+            }
+        }
+        //写横轴的刻度
+        function writeNumber14(a,x) {
+            var b=30;
+            while(b<39){
+                //x是横轴最小的横坐标
+                a=1*b;
+                cavParam.context.font = "10pt Arial";
+                cavParam.context.fillText(a,x,350);
+                b+=1;
+                x+=30;
+            }
+        }
+        //写不同坐标系纵轴的刻度数字
+        function writeNumber21(a) {
+            var b=1;
+            var y=303;
+            while(b<350){
+                a=1*b;
+                cavParam.context.font = "10pt Arial";
+                cavParam.context.fillText(a,60,y);//和坐标左边数字一样
+                b+=40;
+                y-=30;
+            }
+        }
+        function writeNumber22(a) {
+            var b=1;
+            var y=303;//y是纵轴最小刻度的纵坐标，依次-30
+            while(b<10){
+                //a是显示的刻度数字
+                //b是显示的个数
+                a=200*b;
+                cavParam.context.font = "10pt Arial";
+                cavParam.context.fillText(a,390,y);
+                b+=1;
+                y-=30;
+            }
+        }
+        function writeNumber23(a) {
+            var b=1;
+            var y=303;
+            while(b<10){
+                a=200*b;
+                cavParam.context.font = "10pt Arial";
+                cavParam.context.fillText(a,780,y);
+                b+=1;
+                y-=30;
+            }
+        }
+        function writeNumber24(a) {
+            var b=1;
+            var y=303;
+            while(b<350){
+                a=1*b;
+                cavParam.context.font = "10pt Arial";
+                cavParam.context.fillText(a,810,y);
+                b+=40;
+                y-=30;
+            }
+        }
+        //画横坐标刻度线
+        function drawKdline1(x){
+            var b=1;
+            while(b<11){//x是不同坐标系横轴的最小的横坐标
+                cavParam.context.beginPath();
+                cavParam.context.moveTo(x, 325);
+                cavParam.context.lineTo(x,335);
+                cavParam.context.strokeStyle="black";
+                cavParam.context.lineWidth=2;
+                cavParam.context.stroke();
+                cavParam.context.closePath();
+                b+=1;
+                x+=30;
+            }
+        }
+        //画纵坐标刻度线
+        function drawKdline2(x){
+            var b=1;
+            var y=390;
+            while(b<13){
+                cavParam.context.beginPath();
+                //x是纵轴的坐标，刻度线长10
+                cavParam.context.moveTo(x-5, y);
+                cavParam.context.lineTo(x+5,y);
+                cavParam.context.strokeStyle="black";
+                cavParam.context.lineWidth=2;
+                cavParam.context.stroke();
+                cavParam.context.closePath();
+                b+=1;
+                y-=30;
+            }
+        }
+
+        function windowToCanvas(canvas, x,  y){
+            var canvasBox = canvas.getBoundingClientRect(); //获取canvas元素的边界框
+            return {
+                x: (x - canvasBox.left)*(canvas.width/canvasBox.width),
+                //对canvas元素大小与绘图表面大小不一致时进行缩放，只要不在css中设置canvas大小就没有影响
+                y: (y - canvasBox.top)*(canvas.height/canvasBox.height)
+            };
+
+        }
+        function point(e){
+            var location = windowToCanvas(cavParam.canvas, e.clientX, e.clientY);
+            var xx=parseInt(location.x);
+            var yy=parseInt(location.y);
+            cavParam.context.beginPath();
+            cavParam.context.arc(xx,yy,5,0,2*Math.PI)
+            cavParam.context.fill();
+        }
+        cavParam.canvas.addEventListener('click', point);
+        cavParam.context.font = "10pt Arial";
+    }
+    //清空画布并画出坐标系
+    function c1() {
+        cavParam.context.clearRect(0, 0, 430,390);
+        loadCanvas();//重绘网格线
+    }
+    function c2() {
+        cavParam.context.clearRect(330, 0, 660,390);
+        loadCanvas();//重绘网格线
+    }
+    function c3() {
+        cavParam.context.clearRect(660, 0, 1060,390);
+        loadCanvas();//重绘网格线
+    }
+    function c4() {
+        cavParam.context.clearRect(800, 0, 1250,390);
+        loadCanvas();//重绘网格线
+    }
+    /**
+     * 绘制带有箭头的直线
+     * @param cavParam canvas画布变量
+     * @param fromX/fromY 起点坐标
+     * @param toX/toY 终点坐标
+     * @param color 线与箭头颜色
+     **/
+    function drawLineArrow(cavParam, fromX, fromY, toX, toY, color,width) {
+        var headlen = 10;//自定义箭头线的长度
+        var theta = 45;//自定义箭头线与直线的夹角，个人觉得45°刚刚好
+        var arrowX, arrowY;//箭头线终点坐标
+        // 计算各角度和对应的箭头终点坐标
+        var angle = Math.atan2(fromY - toY, fromX - toX) * 180 / Math.PI;
+        var angle1 = (angle + theta) * Math.PI / 180;
+        var angle2 = (angle - theta) * Math.PI / 180;
+        var topX = headlen * Math.cos(angle1);
+        var topY = headlen * Math.sin(angle1);
+        var botX = headlen * Math.cos(angle2);
+        var botY = headlen * Math.sin(angle2);
+
+        cavParam.context.beginPath();
+        //画直线
+        cavParam.context.moveTo(fromX, fromY);
+        cavParam.context.lineTo(toX, toY);
+
+        arrowX = toX + topX;
+        arrowY = toY + topY;
+        //画上边箭头线
+        cavParam.context.moveTo(arrowX, arrowY);
+        cavParam.context.lineTo(toX, toY);
+
+        arrowX = toX + botX;
+        arrowY = toY + botY;
+        //画下边箭头线
+        cavParam.context.lineTo(arrowX, arrowY);
+
+        cavParam.context.strokeStyle = color;
+        cavParam.context.lineWidth=width;
+        cavParam.context.stroke();
+        cavParam.context.closePath();
+
+    }
+    //接收用户信息
+    var jsonData2 = JSON.parse(window.name); //将window.name转化为json对象
+    // console.log(jsonData2.userid2,jsonData2.username2);
+    var user_id=jsonData2.userid2;
+    var user_name=jsonData2.username2;
+
+    // var ss=jsonData3.sss;
+    $("#setOptions").click(function (event) {
+        if(document.getElementById("text1").value==''||document.getElementById("text2").value==''){
+            alert('请输入实验结论')
+        }else{
+            document.getElementById("jieshu").style.display="inline";
+            document.getElementById("yuanli").style.display="inline";
+            /* 与后台通信 */
+            $.ajax({
+                url:'http://121.4.82.48:8086/text',
+                type:'POST',
+                data:{
+                    "text1":document.getElementById("text1").value,
+                    "text2":document.getElementById("text2").value,
+                    'user_id':user_id,
+                    // 'success':ss,
+                },
+                success() {
+                    console.log(document.getElementById("text1").value,document.getElementById("text2").value,user_id);
+                },
+                error(){
+                    console.log('失败')
+                }
+
+            })
+        }
+
+        // $.ajax({
+        //     url:'http://localhost:8082/login',
+        //     type:'POST',
+        //     data:{
+        //         "userId":user_id,
+        //         "userName":user_name,
+        //         'success':ss,
+        //     },
+        //     success() {
+        //         console.log(document.getElementById("number").value);
+        //         console.log(document.getElementById("name").value);
+        //     },
+        //     error(){
+        //         console.log("error")
+        //     }
+        // })
+    });
+</script>
+</html>

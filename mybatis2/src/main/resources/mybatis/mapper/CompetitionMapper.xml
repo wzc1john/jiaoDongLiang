@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nan.mybatis2.mapper.CompetitionMapper">
+    <!--    public Employee getEmpById(Integer id);
+
+     public void insertEmp(Employee employee);-->
+    <select id="getCompById" resultType="com.nan.mybatis2.bean.Competition">
+        SELECT * FROM competition WHERE id=#{id}
+    </select>
+
+    <insert id="insertComp">
+        INSERT INTO competition(height,speed,angle,weight,frequency,hit) VALUES (#{height},#{speed},#{angle},#{weight},#{frequency},#{hit})
+    </insert>
+</mapper>

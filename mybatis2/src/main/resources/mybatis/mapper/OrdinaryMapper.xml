@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nan.mybatis2.mapper.OrdinaryMapper">
+    <!--    public Employee getEmpById(Integer id);
+
+     public void insertEmp(Employee employee);-->
+    <select id="getOriById" resultType="com.nan.mybatis2.bean.Ordinary">
+        SELECT * FROM ordinary WHERE id=#{id}
+    </select>
+
+    <insert id="insertOri">
+        INSERT INTO ordinary(xx,v,h,user_id) VALUES (#{xx},#{v},#{h},#{user_id})
+    </insert>
+
+    <insert id="insertText">
+        INSERT INTO result(text_value1,text_value2,user_id) VALUES (#{text1},#{text2},#{user_id})
+    </insert>
+
+    <insert id="insertLogin">
+        INSERT INTO login(log_number,log_name,success,chance) VALUES (#{userId},#{userName},#{success},#{chance})
+    </insert>
+
+    <insert id="insertGame">
+        INSERT INTO game(angle,vv,top,user_id) VALUES (#{angle},#{vv},#{top},#{user_id})
+    </insert>
+</mapper>
